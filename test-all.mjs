@@ -737,6 +737,60 @@ if (
   fail('portals example still points at a bundled Cohere parser');
 }
 
+// ── 9b. Computrabajo MX local parser ────────────────────────────
+
+console.log('\n9b. Computrabajo MX local parser');
+
+const CT_PARSER = 'scripts/parsers/computrabajo-mx.mjs';
+
+if (fileExists(CT_PARSER)) {
+  pass('Computrabajo MX parser script exists');
+  const ctSyntax = run(NODE, ['--check', CT_PARSER]);
+  if (ctSyntax !== null) {
+    pass('Computrabajo MX parser syntax OK');
+  } else {
+    fail('Computrabajo MX parser has syntax errors');
+  }
+} else {
+  fail('Computrabajo MX parser script is missing');
+}
+
+if (fileExists('portals.yml')) {
+  try {
+    const portals = readFile('portals.yml');
+    const yaml = (await import('js-yaml')).default;
+    const cfg = yaml.load(portals);
+    const companies = Array.isArray(cfg?.tracked_companies) ? cfg.tracked_companies : [];
+    const ct = companies.find(c => c && c.name === 'Computrabajo MX');
+    if (ct) {
+      pass('portals.yml has a Computrabajo MX tracked_companies entry');
+      if (ct.scan_method === 'local_parser') {
+        pass('Computrabajo MX uses scan_method: local_parser');
+      } else {
+        fail('Computrabajo MX scan_method is not local_parser');
+      }
+      if (ct.parser?.command === 'node' && ct.parser?.script === CT_PARSER) {
+        pass('Computrabajo MX parser command/script point at the parser');
+      } else {
+        fail('Computrabajo MX parser command/script are misconfigured');
+      }
+    } else {
+      fail('portals.yml is missing the Computrabajo MX entry');
+    }
+
+    const allow = (cfg?.location_filter?.allow || []).map(String);
+    if (allow.includes('Teletrabajo')) {
+      pass('location_filter.allow includes Teletrabajo');
+    } else {
+      fail('location_filter.allow does not include Teletrabajo');
+    }
+  } catch (e) {
+    fail(`Computrabajo MX portals.yml checks crashed: ${e.message}`);
+  }
+} else {
+  warn('portals.yml missing; skipping user-layer Computrabajo config checks');
+}
+
 // Security hardening: command allowlist, in-repo script containment, careers_url/company validation.
 try {
   const localParser = (await import(pathToFileURL(join(ROOT, 'providers/local-parser.mjs')).href)).default;

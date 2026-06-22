@@ -67,3 +67,7 @@ package-lock.json
 
 # Planning (local scratchpad)
 plan/
+
+# Agent-local config (machine-specific)
+.pi/
+.atl/

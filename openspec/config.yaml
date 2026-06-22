@@ -1,0 +1,121 @@
+# OpenSpec / SDD Configuration — career-ops
+# Auto-generated on 2026-06-08
+# Phase: init (SDD initialization / project context setup)
+
+project:
+  name: career-ops
+  version: 1.8.1
+  description: "AI-powered job search pipeline: offer evaluation, CV generation, portal scanning, batch processing"
+  repository: "https://github.com/santifer/career-ops"
+  workflow: "third-party-fork"
+  workflow_note: >
+    Third-party project (santifer/career-ops). Changes are made on local master/fork
+    branches and never pushed upstream. PRs or diffs are shared manually.
+
+session_choices:
+  execution_mode: "auto"
+  artifact_store: "openspec + engram"
+  chained_pr_strategy: "auto-forecast"
+  review_budget: 400
+  interactive_phase_gate: true
+  proposal_question_rounds: true
+  phase_auto_advance: false
+
+stack:
+  runtime: "Node.js >= 18"
+  module_system: "ESM (.mjs)"
+  test_runner: "custom (test-all.mjs via node)"
+  test_command: "node test-all.mjs"
+  test_quick_command: "node test-all.mjs --quick"
+  ci: "GitHub Actions (ubuntu-latest, node 20)"
+  dependencies:
+    - pkg: "@google/generative-ai"
+      version: "^0.24.1"
+    - pkg: "dotenv"
+      version: "^17.0.0"
+    - pkg: "js-yaml"
+      version: "^4.1.1"
+    - pkg: "playwright"
+      version: "^1.58.1"
+  install_cmd: "npm install"
+
+conventions:
+  imports:
+    - "Always use .mjs extension in imports for ESM modules"
+    - "No TypeScript — vanilla JavaScript across the project"
+  code_style:
+    - "ESM modules with .mjs extension"
+    - "JSDoc @typedef for type definitions"
+    - "Async/await for asynchronous operations"
+  naming:
+    - "kebab-case for file names"
+    - "camelCase for functions/variables"
+    - "PascalCase for TypeScript-like interfaces (via JSDoc)"
+    - "SCREAMING_SNAKE_CASE for constants"
+  data_layers:
+    - layer: "user"
+      description: "Never auto-updated, personalization goes here"
+      paths:
+        - "cv.md"
+        - "config/profile.yml"
+        - "modes/_profile.md"
+        - "article-digest.md"
+        - "portals.yml"
+        - "data/*"
+        - "reports/*"
+        - "output/*"
+        - "interview-prep/*"
+    - layer: "system"
+      description: "Auto-updatable, don't put user data here"
+      paths:
+        - "modes/_shared.md"
+        - "modes/*.md"
+        - "*.mjs"
+        - "dashboard/*"
+        - "templates/*"
+        - "batch/*"
+  canonical_states: "templates/states.yml"
+  git_rules:
+    - "No force push to upstream"
+    - "Commit to local master/fork only"
+
+sdd_phases:
+  - id: "init"
+    label: "SDD Init"
+    description: "Project context setup, OpenSpec config creation"
+  - id: "proposal"
+    label: "Proposal"
+    description: "Change proposal and requirements clarification"
+  - id: "spec"
+    label: "Specification"
+    description: "Detailed specification with acceptance criteria"
+  - id: "design"
+    label: "Design"
+    description: "Technical design and architecture"
+  - id: "tasks"
+    label: "Task Decomposition"
+    description: "Breakdown into implementable tasks"
+  - id: "apply"
+    label: "Implementation"
+    description: "Code implementation"
+  - id: "verify"
+    label: "Verification"
+    description: "Test and verify implementation"
+
+design_source: "docs/superpowers/specs/2026-06-08-computrabajo-parser-design.md"
+
+current_change:
+  title: "Computrabajo MX local parser"
+  component: "scripts/parsers/computrabajo-mx.mjs"
+  design_source: "docs/superpowers/specs/2026-06-08-computrabajo-parser-design.md"
+  status: "design_approved"
+  phase: "init"
+
+phase_rules:
+  strict_tdd: false
+  tdd_note: >
+    This project uses a custom test runner (test-all.mjs) rather than a
+    standard TDD framework. Implementation without pre-written tests is acceptable;
+    run the test suite before completion to validate no regressions.
+  review_required: true
+  changed_line_budget: 400
